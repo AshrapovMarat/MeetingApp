@@ -10,30 +10,33 @@ using System.Threading.Tasks;
 namespace MeetingApp
 {
     /// <summary>
-    /// 
+    /// Приложение для управления личными встречами.
     /// </summary>
     internal class MeetingApp
     {
         /// <summary>
-        /// Менеджер вывода на консоль.
+        /// Менеджер встреч.
         /// </summary>
-        private List<Meeting> meetingList;
         private MeetingManager meetingManager;
+
+        /// <summary>
+        /// Менеджер вывода в консоль.
+        /// </summary>
         private ConsoleOutputManager console;
 
+        /// <summary>
+        /// Форматировщик текстовых данных.
+        /// </summary>
+        private TextFormatter textFormatter;
+
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
         public MeetingApp()
         {
-            meetingList = new List<Meeting>();
-            //meetingList = new List<Meeting>() { new Meeting(new Person("Кандидат", "+56789012345"), "Встреча с кандидатом", new DateTime(2025, 10, 24, 12, 0, 0), 
-            //    new DateTime(2025, 10, 24, 13, 0, 0), new DateTime(2025, 10, 24, 4, 0, 0), "Встреча в кафе.sdlijflksdjflkjdslfkj"),
-
-            //new Meeting(new Person("Кандидат ghfjdllklhg", "+12345678901"), "Встреча с кандидатом dfssdf", new DateTime(2024, 10, 24, 12, 0, 0),
-            //    new DateTime(2024, 10, 24, 13, 0, 0), new DateTime(2024, 10, 24, 4, 0, 0), "Встреча в кафе.sdfsd"),
-
-            //new Meeting(new Person("Кандидатdsflsdl", "+12345678901"), "Встреча с кандидатом sdfsdfsdf", new DateTime(2023, 10, 24, 12, 0, 0),
-            //    new DateTime(2023, 10, 24, 13, 0, 0), new DateTime(2023, 10, 24, 4, 0, 0), "Встреча в кафе.sdjkhfjhsd")};
-            meetingManager = new MeetingManager(meetingList);
+            meetingManager = new MeetingManager();
             console = new ConsoleOutputManager(meetingManager);
+            textFormatter = new TextFormatter(meetingManager);
         }
 
         /// <summary>
@@ -44,23 +47,62 @@ namespace MeetingApp
             while (true)
             {
                 console.Clear();
-                console.DisplayMessage("1. Вывести все встречи.\n2. Добавить встречу.\n3. Изменить информацию о встречи.\n");
+                CheckNotificationNeedForMeeting();
+                console.DisplayMessage("1. Вывести все встречи.\n2. Добавить встречу.\n3. Изменить информацию о встречи.\n" +
+                    "4. Создать отчет о встречах.\n5. Закрыть программу.");
                 ConsoleKeyInfo key = Console.ReadKey(true);
-                switch (key.Key)
+                try
                 {
-                    case ConsoleKey.D1:
-                        DisplayAllMeeting();
-                        Console.ReadKey(true);
-                        break;
-                    case ConsoleKey.D2:
-                        AddMeeting();
-                        break;
-                    case ConsoleKey.D3:
-                        ChangeMeeting();
-                        break;
-                    default:
-                        console.DisplayMessage("Вы ввели не корректную команду, поробуйте снова.");
-                        break;
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.D1:
+                            DisplayAllMeeting();
+                            Console.ReadKey(true);
+                            break;
+                        case ConsoleKey.D2:
+                            AddMeeting();
+                            break;
+                        case ConsoleKey.D3:
+                            ChangeMeeting();
+                            break;
+                        case ConsoleKey.D4:
+                            CreateReport();
+                            Console.ReadKey();
+                            break;
+                        case ConsoleKey.D5:
+                            CloseProgram();
+                            break;
+                        default:
+                            console.Clear(); 
+                            console.DisplayMessage("Вы ввели не корректную команду, поробуйте снова.");
+                            Console.ReadKey();
+                            break;
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    console.DisplayMessage(GetTextNotification(ex));
+                    Console.ReadKey();
+                }
+                catch (OverflowException ex)
+                {
+                    console.DisplayMessage(GetTextNotification(ex));
+                    Console.ReadKey();
+                }
+                catch (ArgumentException ex)
+                {
+                    console.DisplayMessage(GetTextNotification(ex));
+                    Console.ReadKey();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    console.DisplayMessage(GetTextNotification(ex));
+                    Console.ReadKey();
+                }
+                catch (Exception ex)
+                {
+                    console.DisplayMessage($"Ошибка: {ex.Message}");
+                    Console.ReadKey();
                 }
             }
         }
@@ -71,7 +113,7 @@ namespace MeetingApp
         private void DisplayAllMeeting()
         {
             console.Clear();
-            Meeting[] meetingList = GetMeetingList();
+            Meeting[] meetingList = GetMeetings();
             console.DisplayInfoAboutMeetings(meetingList);
         }
 
@@ -81,7 +123,7 @@ namespace MeetingApp
         private void AddMeeting()
         {
             DisplayAllMeeting();
-            console.DisplayMessage("Введите имя человека с которым назначена встреча: ");
+            console.DisplayMessage("Введите имя участника с которым назначена встреча: ");
             string personName = Console.ReadLine();
 
             console.DisplayMessage("Введите номер телефона участника, с которым назначена встреча: ");
@@ -99,6 +141,10 @@ namespace MeetingApp
                 dateAboutDate["EndTime"], dateAboutDate["ReminderTime"], additionalInformationMeeting));
         }
 
+        /// <summary>
+        /// Получить коллекцию дат.
+        /// </summary>
+        /// <returns>Коллекция дат.</returns>
         private Dictionary<string, DateTime> GetDates()
         {
             console.DisplayMessage("\nВведите дату начала встречи (в формате дд.мм.гггг): ");
@@ -122,19 +168,20 @@ namespace MeetingApp
         }
 
         /// <summary>
-        /// изменить встречу.
+        /// Изменить встречу.
         /// </summary>
         private void ChangeMeeting()
         {
+            Meeting[] meetingList = GetMeetings();
             DisplayAllMeeting();
             console.DisplayMessage("Выберите индекс встречи, который хотите отредактировать:");
             if (int.TryParse(Console.ReadLine(), out int indexMeeting))
             {
                 indexMeeting--;
-                if (indexMeeting >= meetingList.Count)
+                if (indexMeeting > 0 && indexMeeting >= meetingList.Length)
                 {
                     throw new OverflowException("Был выбран не корректный индекс встречи.");
-                } 
+                }
             }
             else
             {
@@ -142,7 +189,7 @@ namespace MeetingApp
             }
             console.DisplayMessage("Выберите параметр, который хотите изменить:" +
                 "\n1. Имя участника." +
-                "\n2. Добавить или изменить контактную информацию." +
+                "\n2. Изменить контактную информацию." +
                 "\n3. Изменить название встречи." +
                 "\n4. Изменить время встречи." +
                 "\n5. Удалить встречу." +
@@ -182,6 +229,27 @@ namespace MeetingApp
         }
 
         /// <summary>
+        /// Закрыть программу.
+        /// </summary>
+        private void CloseProgram()
+        {
+            Environment.Exit(0);
+        }
+
+        /// <summary>
+        /// Создать отчет.
+        /// </summary>
+        private void CreateReport()
+        {
+            ReportAboutMeeting report = new ReportAboutMeeting(textFormatter);
+
+            Meeting[] meetingList = GetMeetings();
+            report.CreateReport(meetingList);
+            console.Clear();
+            console.DisplayMessage("Отчет успешно создался в папке с программой.");
+        }
+
+        /// <summary>
         /// Считать дату из консоли.
         /// </summary>
         /// <returns>Дата.</returns>
@@ -218,7 +286,11 @@ namespace MeetingApp
             }
         }
 
-        private Meeting[] GetMeetingList() 
+        /// <summary>
+        /// Получить массив встреч.
+        /// </summary>
+        /// <returns>Массив встреч.</returns>
+        private Meeting[] GetMeetings()
         {
             int countMeetings = meetingManager.GetCount();
             Meeting[] meetingList = new Meeting[countMeetings];
@@ -228,6 +300,27 @@ namespace MeetingApp
             }
 
             return meetingList;
+        }
+
+        /// <summary>
+        /// Проверка надо ли напомнить пользователю о встречи.
+        /// </summary>
+        private void CheckNotificationNeedForMeeting()
+        {
+            Meeting[] meetingList = GetMeetings();
+            foreach (var meeting in meetingList)
+            {
+                if (DateTime.Now > meeting.ReminderTime && DateTime.Now < meeting.StartTime)
+                {
+                    console.DisplayMessage($"У Вас встреча {meeting.Name} c {meeting.Person.Name} в {meeting.ReminderTime.ToUniversalTime()}.\n");
+                }
+            }
+        }
+
+        private string GetTextNotification(Exception ex)
+        {
+            string text = $"Уведомление: {ex.Message} Попробуйте еще раз.";
+            return text;
         }
     }
 }

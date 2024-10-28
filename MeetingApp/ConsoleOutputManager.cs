@@ -11,12 +11,26 @@ namespace MeetingApp
     /// </summary>
     internal class ConsoleOutputManager
     {
+        /// <summary>
+        /// Менеджер встреч.
+        /// </summary>
         private MeetingManager meetingManager;
 
+        /// <summary>
+        /// Форматировщик текстовых данных.
+        /// </summary>
+        private TextFormatter textFormatter;
+
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="meetingManager">Менеджер встреч.</param>
         public ConsoleOutputManager(MeetingManager meetingManager)
         {
             this.meetingManager = meetingManager;
+            textFormatter = new TextFormatter(meetingManager);
         }
+
         /// <summary>
         /// Вывести сообщение.
         /// </summary>
@@ -34,38 +48,13 @@ namespace MeetingApp
             Console.Clear();
         }
 
+        /// <summary>
+        /// Вывести информацию о встречах.
+        /// </summary>
+        /// <param name="meetings">Массив встреч.</param>
         public void DisplayInfoAboutMeetings(Meeting[] meetings)
         {
-            Dictionary<string, int> maxValueFields = meetingManager.GetMaxLengthValueName();
-            int maxLengthFieldName = maxValueFields["Name"];
-            int maxLengthFieldNamePerson = maxValueFields["NamePerson"];
-            int maxLengthFieldAdditionalInformation = maxValueFields["AdditionalInformation"];
-
-            int maxLengthFieldTime = 20;
-            int maxLengthFieldPhoneNumber = 15;
-            string title = $"|{"Порядковый номер".ToString().PadRight(16)}" +
-                $"|{"Имя участника".PadRight(maxLengthFieldNamePerson)}" +
-                $"|{"Номер телефона".PadRight(maxLengthFieldPhoneNumber)}" +
-                $"|{"Название задачи".PadRight(maxLengthFieldName)}" +
-                $"|{"Начала встречи".PadRight(maxLengthFieldTime)}" +
-                $"|{"Конец встречи".PadRight(maxLengthFieldTime)}" +
-                $"|{"Во сколько напомнить".PadRight(maxLengthFieldTime)}" +
-                $"|{"Дополнительная информация".PadRight(maxLengthFieldAdditionalInformation)}|";
-            
-            Console.WriteLine(title);
-            Console.WriteLine(new string('-', title.Length));
-            for (int i = 0; i < meetings.Length; i++)
-            {
-                Console.WriteLine($"|{(i + 1).ToString().PadRight(16)}" +
-                    $"|{meetings[i].Person.Name.PadRight(maxLengthFieldNamePerson)}" +
-                    $"|{meetings[i].Person.PhoneNumber.PadRight(maxLengthFieldPhoneNumber)}" +
-                    $"|{meetings[i].Name.PadRight(maxLengthFieldName)}" +
-                    $"|{meetings[i].StartTime.ToString().PadRight(maxLengthFieldTime)}" +
-                    $"|{meetings[i].EndTime.ToString().PadRight(maxLengthFieldTime)}" +
-                    $"|{meetings[i].ReminderTime.ToString().PadRight(maxLengthFieldTime)}" +
-                    $"|{meetings[i].AdditionalInformation.PadRight(maxLengthFieldAdditionalInformation)}|");
-                Console.WriteLine(new string('-', title.Length));
-            }
+            Console.WriteLine(textFormatter.GetMeetingTableInfo(meetings));
         }
     }
 }

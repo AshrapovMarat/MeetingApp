@@ -17,15 +17,18 @@ namespace MeetingApp
         /// </summary>
         private List<Meeting> meetings;
 
+        /// <summary>
+        /// Менеджер участников.
+        /// </summary>
         private PersonManager personManager;
 
         /// <summary>
         /// Конструктор.
         /// </summary>
         /// <param name="meetings">Список встреч.</param>
-        public MeetingManager(List<Meeting> meetings)
+        public MeetingManager()
         {
-            this.meetings = meetings;
+            meetings = new List<Meeting>();
             personManager = new PersonManager();
             SortListByDate();
         }
@@ -72,7 +75,11 @@ namespace MeetingApp
             return meetings[index];
         }
 
-        public Dictionary<string, int> GetMaxLengthValueName()
+        /// <summary>
+        /// Получить максимальную длину значений.
+        /// </summary>
+        /// <returns>Коллекция с максимальной длиной для каждого значения.</returns>
+        public Dictionary<string, int> GetMaxLengthValues()
         {
             Dictionary<string, int> maxValues = new Dictionary<string, int>();
             int columnNameLength = 15;
@@ -100,12 +107,25 @@ namespace MeetingApp
             return maxValues;
         }
 
+        /// <summary>
+        /// Изменить название встречи.
+        /// </summary>
+        /// <param name="index">Индекс встречи.</param>
+        /// <param name="newName">Новое название встречи.</param>
         public void ChangeNameMeeting(int index, string newName)
         {
             var meeting = meetings.ElementAt(index);
             meeting.Name = newName;
         }
 
+        /// <summary>
+        /// Изменить время встречи.
+        /// </summary>
+        /// <param name="index">Индекс встречи.</param>
+        /// <param name="newStartTime">Начало встречи.</param>
+        /// <param name="newEndTime">Конец встречи.</param>
+        /// <param name="newReminderTime">Время напоминания.</param>
+        /// <exception cref="InvalidOperationException">Генерируется, если встречи пересекаются.</exception>
         public void ChangeTimeMeeting(int index, DateTime newStartTime, DateTime newEndTime, DateTime newReminderTime)
         {
             if (CheckDateIntersection(newStartTime, newEndTime, index))
@@ -119,29 +139,54 @@ namespace MeetingApp
             SortListByDate();
         }
 
+        /// <summary>
+        /// Изменить дополнительную информацию.
+        /// </summary>
+        /// <param name="index">Индекс встречи.</param>
+        /// <param name="newAdditionalInformation">Допольнительная иинформация.</param>
         public void ChangeAdditionalInformationMeeting(int index, string newAdditionalInformation)
         {
             var meeting = meetings.ElementAt(index);
             meeting.AdditionalInformation = newAdditionalInformation;
         }
 
+        /// <summary>
+        /// Отсортировать список встреч по началу встречи.
+        /// </summary>
         private void SortListByDate()
         {
             meetings = meetings.OrderBy(p => p.StartTime).ToList();
         }
 
+        /// <summary>
+        /// Изменить имя участника.
+        /// </summary>
+        /// <param name="index">Индекс встречи.</param>
+        /// <param name="newPersonName">Имя участника.</param>
         public void ChangePersonName(int index, string newPersonName)
         {
             var meeting = meetings.ElementAt(index);
-            meeting.Person.Name = newPersonName;
+            personManager.ChangeName(meeting.Person, newPersonName);
         }
 
-        public void ChangePersonPhoneNumber(int index, string newPersonName)
+        /// <summary>
+        /// Изменить имя участника.
+        /// </summary>
+        /// <param name="index">Индекс встречи.</param>
+        /// <param name="newPhoneNumber">Новый номер телефона участника.</param>
+        public void ChangePersonPhoneNumber(int index, string newPhoneNumber)
         {
             var meeting = meetings.ElementAt(index);
-            meeting.Person.PhoneNumber = newPersonName;
+            personManager.ChangePhoneNumber(meeting.Person, newPhoneNumber);
         }
 
+        /// <summary>
+        /// Проверка есть ли пересечения дат.
+        /// </summary>
+        /// <param name="startTime">Начало встречи.</param>
+        /// <param name="endTime">Конец встречи.</param>
+        /// <param name="index">Индекс встречи.</param>
+        /// <returns>Возвращает true, если даты пересекаются; в противном случае возвращает false.</returns>
         public bool CheckDateIntersection(DateTime startTime, DateTime endTime, int index = -1)
         {
             bool isDateIntersection = false;

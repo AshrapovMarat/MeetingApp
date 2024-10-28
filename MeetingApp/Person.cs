@@ -9,7 +9,7 @@ namespace MeetingApp
     /// <summary>
     /// Участник.
     /// </summary>
-    public class Person
+    internal class Person
     {
         /// <summary>
         /// Имя участник.
@@ -27,8 +27,18 @@ namespace MeetingApp
         /// <param name="name">Имя участник.</param>
         public Person(string name, string phoneNumber) 
         {
-            this.Name = name;
-            this.PhoneNumber = phoneNumber;
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Не введено имя пользователя.");
+            }
+
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                throw new ArgumentException("Не введен номер телефона участника.");
+            }
+
+            Name = name;
+            PhoneNumber = phoneNumber;
         }
     }
 }

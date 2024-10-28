@@ -1,0 +1,15 @@
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\bin\Debug\net8.0\MeetingApp.exe
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\bin\Debug\net8.0\MeetingApp.deps.json
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\bin\Debug\net8.0\MeetingApp.runtimeconfig.json
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\bin\Debug\net8.0\MeetingApp.dll
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\bin\Debug\net8.0\MeetingApp.pdb
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.AssemblyInfoInputs.cache
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.AssemblyInfo.cs
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.csproj.CoreCompileInputs.cache
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.dll
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\refint\MeetingApp.dll
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.pdb
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.genruntimeconfig.cache
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\ref\MeetingApp.dll
+C:\Users\Марат\source\repos\MeetingApp\MeetingApp\obj\Debug\net8.0\MeetingApp.sourcelink.json

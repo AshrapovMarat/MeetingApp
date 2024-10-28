@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace MeetingApp
 {
     /// <summary>
-    /// Встреча
+    /// Встреча.
     /// </summary>
     internal class Meeting
     {
         /// <summary>
-        /// Человек.
+        /// Участник.
         /// </summary>
         public Person Person { get; set; }
 
@@ -42,6 +42,16 @@ namespace MeetingApp
         /// </summary>
         public string AdditionalInformation { get; set; }
 
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="person">Участник.</param>
+        /// <param name="name">Наименования задачи.</param>
+        /// <param name="startTime">Начало встречи.</param>
+        /// <param name="endTime">Конец встречи.</param>
+        /// <param name="reminderTime">Время напоминания.</param>
+        /// <param name="additionalInformation">Дополнительная информация о встречи.</param>
+        /// <exception cref="ArgumentException">Генерируется, если введен не корректный аргумент.</exception>
         public Meeting(Person person, string name, DateTime startTime, DateTime endTime, DateTime reminderTime, string additionalInformation)
         {
             if (string.IsNullOrEmpty(name))
@@ -51,7 +61,7 @@ namespace MeetingApp
 
             if (startTime >= endTime)
             {
-                throw new ArgumentException(" Дата завершения встречи должна быть позже даты её начала.");
+                throw new ArgumentException("Дата завершения встречи должна быть позже даты её начала.");
             }
 
             if (startTime < DateTime.Now)
@@ -66,6 +76,5 @@ namespace MeetingApp
             ReminderTime = reminderTime;
             AdditionalInformation = additionalInformation;
         }
-
     }
 }
